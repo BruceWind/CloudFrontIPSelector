@@ -19,3 +19,10 @@ node ./main.js
 ```
 
 3. wait minites to get `result.txt` which contain best IPs will be saved in this folder.
+
+
+### In addition
+
+Have you tried Ccore-CDN? 
+
+I have wrote another IP-selector for Gcore: https://github.com/BruceWind/GcoreCDNIPSelector, you can try it.
