@@ -10,10 +10,11 @@ On the other hand, those living in China use it often get timeout, shipments los
 ### How to use?
 
 1. set up node environment.
-Some pople who have no experience on Node  may need to set up [nvm](https://github.com/nvm-sh/nvm).
+In case people who havn't set up node. I highly recommand [nvm](https://github.com/nvm-sh/nvm) or [nvm-windows](https://github.com/coreybutler/nvm-windows.) to set up.
 
 2. run this JS file.
 ```
+npm install
 node ./main.js
 ```
 
