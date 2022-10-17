@@ -25,4 +25,4 @@ node ./main.js
 
 Have you tried Ccore-CDN? 
 
-I have wrote another IP-selector for Gcore: https://github.com/BruceWind/GcoreCDNIPSelector, you can try it.
+I have written another IP-selector for Gcore: https://github.com/BruceWind/GcoreCDNIPSelector, you can try it.
