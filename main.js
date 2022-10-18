@@ -1,14 +1,17 @@
-const { exec } = require('node:child_process')
-
+import { exec } from 'node:child_process';
+import fetch from 'node-fetch';
+import fs from 'node:fs';
 // pls make sure this is identical url from https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/LocationsOfEdgeServers.html.
-const OFFICIAL_AWS_IPs_URL = "https://d7uri8nf7uskq.cloudfront.net/tools/list-cloudfront-ips"
-const PREFIX_IP_LOCALATION = "http://ip2c.org/"
+//const OFFICIAL_AWS_IPs_URL = "https://d7uri8nf7uskq.cloudfront.net/tools/list-cloudfront-ips" //it is deprecated because it is without region.
+const OFFICIAL_AWS_IPs_URL = "https://ip-ranges.amazonaws.com/ip-ranges.json"
 
 "use strict"
 
-const Netmask = require('netmask').Netmask
+import netmask from 'netmask';
 
-const PING_THREADS = 3000;
+const Netmask = netmask.Netmask;
+
+const PING_THREADS = 100;
 let countOfBeingProcess = 0;
 // this is the pattern of the latency from ping result.
 const latencyPattern = /time=(\d+)\sms/gm;
@@ -29,70 +32,56 @@ function execPromise(command) {
 
 
 
-let excludeCNIPs = [];
-
+let filteredIPs = [];
 
 // 
 async function main() {
     try {
-        var result = await execPromise(`curl ${OFFICIAL_AWS_IPs_URL}`);
-        const json = JSON.parse(result);
+        let settings = { method: "Get" };
+        var response = await fetch(OFFICIAL_AWS_IPs_URL, settings);
+        const body = await response.text();
+        const json = JSON.parse(body);
         // items of this are CIDR, its doc is here https://datatracker.ietf.org/doc/rfc4632/.
-        const arrOfIPRanges = json["CLOUDFRONT_GLOBAL_IP_LIST"];
+        const arrOfIPRanges = [];
+        for (const item of json.prefixes) {
+            if (item.service.includes("CLOUDFRONT") && item.region.includes("ap-")) {
+                arrOfIPRanges.push(item.ip_prefix);
+            }
+        }
 
         for (const ipRnage of arrOfIPRanges) {
             let netmask = new Netmask(ipRnage);
-
-            let ip = netmask.first;
-
-            const queryLocationCommand = `curl --max-time 6.5  --connect-timeout 6.0  ${PREFIX_IP_LOCALATION}${ip}`;
-            let resultOfIP = undefined;
-            try {
-                resultOfIP = await execPromise(queryLocationCommand);
-            }
-            catch (e) {
-                console.log(`${queryLocationCommand} is faield.`, e);
-                continue;
-            }
-
-            if (resultOfIP.includes(';')) {
-                const nation = resultOfIP.split(";")[1].trim();
-
-                console.log(`${ip} is in ${nation}. size: ${netmask.size}`);
-                if (nation == 'CN') {
-                    continue;
-                }
-                else {
-                    netmask.forEach(async (ip) => {
-                        excludeCNIPs.push(ip);
-                    })
-                }
-            }
-            else {
-                throw new Error(` unexpected result : ${resultOfIP}.`)
-            }
-
+            netmask.forEach(async (ip) => {
+                filteredIPs.push(ip);
+            })
         }
 
 
-        console.log(`IPs.length is ${excludeCNIPs.length}`);
+        console.log(`IPs.length is ${filteredIPs.length}`);
 
         const unsortedArr = [];
-        for (let i = 0; i < excludeCNIPs.length; i++) {
-            const ip = excludeCNIPs[i];
+        for (let i = 0; i < filteredIPs.length; i++) {
+            const ip = filteredIPs[i];
 
-            if (countOfBeingProcess > PING_THREADS) {
+            if (countOfBeingProcess > PING_THREADS || i < filteredIPs.length - 100) {
                 countOfBeingProcess++;
-                const avgLatency = await queryAvgLatency(ip);
-                if (avgLatency < 200) {
-                    unsortedArr.push({ ip, latency: avgLatency });
+                try {
+
+                    const avgLatency = await queryAvgLatency(ip);
+                    if (avgLatency < 150) {
+                        unsortedArr.push({ ip, latency: avgLatency });
+                    }
+                    countOfBeingProcess--;
                 }
-                countOfBeingProcess--;
+                catch (e) {
+
+                    countOfBeingProcess--;
+                }
             }
             else {
                 countOfBeingProcess++;
                 queryAvgLatency(ip).then(function (avgLatency) {
-                    if (avgLatency < 200) {
+                    if (avgLatency < 150) {
                         unsortedArr.push({ ip, latency: avgLatency });
                     }
                     countOfBeingProcess--;
@@ -109,7 +98,7 @@ async function main() {
         });
 
         //to save this sorted array to 'result.txt'.
-        fs = require('fs');
+
         fs.writeFile('result.txt', JSON.stringify(resultArr), function (err) {
             if (err) return console.log(err);
         });
@@ -134,7 +123,7 @@ async function queryLatency(ip) {
         return Number(arr[1]);
     }
     catch (e) {
-        console.log(`${ip} is not reachable.`);
+        // console.log(`${ip} is not reachable.`);
     }
     return 1000;
 }
@@ -147,6 +136,8 @@ async function queryAvgLatency(ip) {
     try {
         await queryLatency(ip); // this line looks like useless, but In my opinion, this can make connection reliable. 
         const latency1 = await queryLatency(ip);
+        if (latency1 > 200) return latency1;
+
         const latency2 = await queryLatency(ip);
         return (latency1 + latency2) / 2;
     }
