@@ -201,18 +201,24 @@ async function main() {
         console.log(`try to ping ${deletedIPs.length} IPs...`);
 
 
+        const unsortedArr = [];
         let processIndex = 0;
         const maxProcess = deletedIPs.length;
 
-        setInterval(async () => {
-            console.log(`process: ${processIndex}/${maxProcess}...`);
+
+        const processPrinter = setInterval(async () => {
+            console.log(`process: ${processIndex}/${maxProcess}. And got ${unsortedArr.length} IPs.`);
         }, 1000 * 10);
 
-        const unsortedArr = [];
         for (let i = 0; i < deletedIPs.length; i++) {
             const ip = deletedIPs[i];
             processIndex++;
+            if (unsortedArr.length >= 200) {
+                console.log('got enough IPs, stop pinging.');
+                break;
+            }
             if (countOfBeingProcess > PING_THREADS || i > deletedIPs.length - 100) {
+
                 countOfBeingProcess++;
                 try {
 
@@ -247,17 +253,18 @@ async function main() {
 
         console.log(`unsortedArr.length is ${unsortedArr.length}`);
         // to sort the array by the latency.
-        let resultArr = unsortedArr.sort((a, b) => {
-            return a.latency - b.latency;
-        });
+        let resultArr = unsortedArr
+            .filter(item => (item.ip.split('.').pop() != '0'))
+            .sort((a, b) => a.latency - b.latency);
 
         // to cut 100 IPs from the array by priority.
         if (resultArr.length > 100) {
             resultArr = resultArr.slice(0, 200);
         }
 
-        //to save this sorted array to 'result.txt'.
+        clearInterval(processPrinter);
 
+        //to save this sorted array to 'result.txt'.
         fs.writeFile('result.txt', JSON.stringify(resultArr), function (err) {
             if (err) return console.error(err);
         });
