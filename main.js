@@ -83,7 +83,7 @@ async function main() {
                 let netmask = new Netmask(item.ip_prefix);
                 const addIfNeed = async (latency) => {
                     if (latency < THREASHOLD * 1.5 && latency > 30) {
-                        if (latency > 60) {
+                        if (latency > 100) {
                             // console.log(item.ip_prefix, 'added', netmask.first, latency);
                             arrOfIPRanges.push(item.ip_prefix);
                         }
