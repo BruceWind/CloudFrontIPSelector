@@ -1,4 +1,3 @@
-import { exec } from 'node:child_process';
 import fetch from 'node-fetch';
 import ping from 'ping';
 import fs from 'node:fs';
@@ -6,7 +5,7 @@ import fs from 'node:fs';
 //const OFFICIAL_AWS_IPs_URL = "https://d7uri8nf7uskq.cloudfront.net/tools/list-cloudfront-ips" //it is deprecated because it is without region.
 const OFFICIAL_AWS_IPs_URL = "https://ip-ranges.amazonaws.com/ip-ranges.json"
 
-const PREFIX_IP_LOCALATION = "http://ip2c.org/"
+const PREFIX_IP_REQUEST_URL = "http://ip-api.com/json/"
 
 "use strict"
 
@@ -22,41 +21,31 @@ let countOfBeingProcess = 0;
 const latencyPattern = /time=(\d+)\sms/gm;
 
 
+const httpSettings = {
+    method: "Get",
+    headers: {
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36'
+    }
+};
 
 let filteredIPs = [];
 
-function execPromise(command) {
-    return new Promise(function (resolve, reject) {
-        exec(command, (error, stdout, stderr) => {
-            if (error) {
-                reject(error);
-                return;
-            }
-
-            resolve(stdout.trim());
-        });
-    });
-}
-
-
 async function queryNation(ip) {
 
-    const queryLocationCommand = `curl --max-time 6.5  --connect-timeout 6.0  ${PREFIX_IP_LOCALATION}${ip}`;
-    let resultOfIP = 'UNKNOWN';
+
     try {
-        resultOfIP = await execPromise(queryLocationCommand);
+        var response = await fetch(PREFIX_IP_REQUEST_URL + ip, httpSettings);
+        const body = await response.text();
+
+        const json = JSON.parse(body);
+        // console.log(`${ip} is ${json.country}.`);
+        return json.countryCode;
     }
     catch (e) {
-        console.log(`${queryLocationCommand} is faield.`, e);
+        console.err(`queryNation encounter an error,`, e.message);
+        return undefined;
     }
 
-    if (resultOfIP.includes(';')) {
-        const nation = resultOfIP.split(";")[1].trim();
-        return nation;
-    }
-    else {
-        return 'UNKNOWN';
-    }
 }
 
 // 
@@ -68,9 +57,8 @@ async function main() {
         return;
     }
     try {
-        console.log(`start to get json...`);
-        let settings = { method: "Get" };
-        var response = await fetch(OFFICIAL_AWS_IPs_URL, settings);
+        console.log(`start to obstain IP ranges...`);
+        var response = await fetch(OFFICIAL_AWS_IPs_URL, httpSettings);
         const body = await response.text();
         const json = JSON.parse(body);
 
@@ -82,24 +70,18 @@ async function main() {
             if (item.service == "CLOUDFRONT") {
                 let netmask = new Netmask(item.ip_prefix);
                 const addIfNeed = async (latency) => {
-                    if (latency < THREASHOLD * 1.5 && latency > 30) {
-                        if (latency > 100) {
+                    if (latency < THREASHOLD * 1.5) {
+                        const nation = await queryNation(netmask.first);
+                        if (nation && nation != 'CN') {
                             // console.log(item.ip_prefix, 'added', netmask.first, latency);
                             arrOfIPRanges.push(item.ip_prefix);
-                        }
-                        else {
-                            const nation = await queryNation(netmask.first);
-                            if (nation != 'CN') {
-                                // console.log(item.ip_prefix, 'added', netmask.first, latency);
-                                arrOfIPRanges.push(item.ip_prefix);
-                            }
                         }
                     }
                     else {
                         // console.warn(item.ip_prefix, 'lost.', netmask.first, latency);
                     }
                 }
-                if (i % 20 == 0 || i > json.prefixes.length - 10) {
+                if (i % 10 == 0 || i > json.prefixes.length - 10) {
                     let latency = await queryAvgLatency(netmask.first);
                     await addIfNeed(latency);
                 }
@@ -207,14 +189,14 @@ async function main() {
 
 
         const processPrinter = setInterval(async () => {
-            console.log(`process: ${processIndex}/${maxProcess}. And got ${unsortedArr.length} IPs.`);
+            console.log(`process: ${processIndex}/${maxProcess}. And got ${unsortedArr.length} available IPs.`);
         }, 1000 * 10);
 
         for (let i = 0; i < deletedIPs.length; i++) {
             const ip = deletedIPs[i];
             processIndex++;
-            if (unsortedArr.length >= 200) {
-                console.log('got enough IPs, stop pinging.');
+            if (unsortedArr.length >= 300) {// to save time.
+                console.log('Already got enough IPs, stop pinging.');
                 break;
             }
             if (countOfBeingProcess > PING_THREADS || i > deletedIPs.length - 100) {
@@ -254,7 +236,7 @@ async function main() {
         console.log(`unsortedArr.length is ${unsortedArr.length}`);
         // to sort the array by the latency.
         let resultArr = unsortedArr
-            .filter(item => (item.ip.split('.').pop() != '0'))
+            .filter(item => (item.ip.split('.').pop() > 1)) // last number of ip maybe as a network gate, So it can't use as CDN IP.
             .sort((a, b) => a.latency - b.latency);
 
         // to cut 100 IPs from the array by priority.
