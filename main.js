@@ -14,7 +14,7 @@ import netmask from 'netmask';
 const Netmask = netmask.Netmask;
 
 const PING_THREADS = 1000;
-const THREASHOLD = 180;
+const THREASHOLD = 85;
 
 let countOfBeingProcess = 0;
 // this is the pattern of the latency from ping result.
@@ -30,6 +30,7 @@ const httpSettings = {
 
 let filteredIPs = [];
 
+// it is used to exclude China IPs.
 async function queryNation(ip) {
 
 
@@ -299,13 +300,16 @@ async function queryAvgLatency(ip) {
     try {
         await queryLatency(ip); // this line looks like useless, but In my opinion, this can make connection reliable. 
         const latency1 = await queryLatency(ip);
+        // console.log(`${ip} latency1 is ${latency1}`);
         if (latency1 > THREASHOLD * 2) return latency1;
 
         const latency2 = await queryLatency(ip);
+        // console.log(`${ip} latency2 is ${latency2}`);
         if (latency2 > THREASHOLD * 1.5) return latency2;
 
 
         const latency3 = await queryLatency(ip);
+        // console.log(`${ip} latency3 is ${latency3}`);
         let result = (latency1 + latency2 + latency3) / 3
 
         return Math.round(result);
