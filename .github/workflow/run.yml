@@ -8,6 +8,8 @@ on:
 
 jobs:
   build:
+    runs-on: ${{ matrix.os }}
+
     strategy:
       matrix:
         node-version: [14.x]
