@@ -42,7 +42,7 @@ async function queryNation(ip) {
         return json.countryCode;
     }
     catch (e) {
-        console.err(`queryNation encounter an error,`, e.message);
+        console.error(`queryNation encounter an error,`, e.message);
         return undefined;
     }
 
@@ -57,7 +57,7 @@ async function main() {
         return;
     }
     try {
-        console.log(`start to obstain IP ranges...`);
+        console.log(`start to obtain IP ranges...`);
         var response = await fetch(OFFICIAL_AWS_IPs_URL, httpSettings);
         const body = await response.text();
         const json = JSON.parse(body);
@@ -145,12 +145,12 @@ async function main() {
         console.log(`removalGates.length is ${removalGates.length}`);
         console.log(`shortGates.length is ${shortGates.length}`);
 
-        fs.writeFile('removalGates.txt', JSON.stringify(removalGates), function (err) {
-            if (err) return console.error(err);
-        });
-        fs.writeFile('shortGates.txt', JSON.stringify(shortGates), function (err) {
-            if (err) return console.error(err);
-        });
+        // fs.writeFile('removalGates.txt', JSON.stringify(removalGates), function (err) {
+        //     if (err) return console.error(err);
+        // });
+        // fs.writeFile('shortGates.txt', JSON.stringify(shortGates), function (err) {
+        //     if (err) return console.error(err);
+        // });
 
 
 
@@ -251,10 +251,10 @@ async function main() {
             if (err) return console.error(err);
         });
 
-        console.log(`Done.`);
+        console.log(`Congradulations! Got ${resultArr.length} IPs.`);
 
     } catch (e) {
-        console.error(e.message);
+        console.error('Sorry,', e.message);
     }
 }
 
