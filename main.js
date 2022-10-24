@@ -14,7 +14,7 @@ import netmask from 'netmask';
 const Netmask = netmask.Netmask;
 
 const PING_THREADS = 1000;
-const THREASHOLD = 85;
+const THREASHOLD = 180;
 
 let countOfBeingProcess = 0;
 // this is the pattern of the latency from ping result.
@@ -38,7 +38,7 @@ async function queryNation(ip) {
         const body = await response.text();
 
         const json = JSON.parse(body);
-        // console.log(`${ip} is ${json.country}.`);
+        console.log(`${ip} is ${json.country}.`);
         return json.countryCode;
     }
     catch (e) {
@@ -54,6 +54,8 @@ async function main() {
     if (THREASHOLD < 60) {
         //exist process.
         console.error("THREASHOLD must be greater than 60.");
+        //exit 1
+        process.exit(1);
         return;
     }
     try {
@@ -61,6 +63,11 @@ async function main() {
         var response = await fetch(OFFICIAL_AWS_IPs_URL, httpSettings);
         const body = await response.text();
         const json = JSON.parse(body);
+        if (!json.prefixes || json.prefixes.length == 0) {
+            console.error("prefixes is empty.");
+            process.exit(1);
+            return;
+        }
 
         console.log(`start to filter available subnets...`);
         // items of this are CIDR, its doc is here https://datatracker.ietf.org/doc/rfc4632/.
@@ -91,6 +98,11 @@ async function main() {
             }
         }
 
+        if (arrOfIPRanges.length == 0) {
+            console.error(`Got nothing fron ${OFFICIAL_AWS_IPs_URL}.`);
+            process.exit(1);
+        }
+
         for (const ipRnage of arrOfIPRanges) {
             // if (filteredIPs.length > 10000) break;
             let netmask = new Netmask(ipRnage);
@@ -101,6 +113,10 @@ async function main() {
 
 
         console.log(`IPs.length is ${filteredIPs.length}`);
+        if (filteredIPs.length < 1) {
+            //exit 1
+            process.exit(1);
+        }
 
         console.log(`start to detect network-gates open...`);
         //to detect network-gate is open.
@@ -251,10 +267,13 @@ async function main() {
             if (err) return console.error(err);
         });
 
-        console.log(`Congradulations! Got ${resultArr.length} IPs.`);
+        const strPrefix = resultArr.length == 0 ? 'Oops' : 'Congradulations';
+
+        console.log(`${strPrefix}! Got ${resultArr.length} IPs.`);
 
     } catch (e) {
         console.error('Sorry,', e.message);
+        process.exit(1);
     }
 }
 
