@@ -23,6 +23,6 @@ node ./main.js
 
 ### In addition
 
-Have you tried Ccore-CDN? 
+a. Have you tried Gcore-CDN?   I have written another IP-selector for Gcore: https://github.com/BruceWind/GcoreCDNIPSelector, you can try it.
 
-I have written another IP-selector for Gcore: https://github.com/BruceWind/GcoreCDNIPSelector, you can try it.
+b. I limit latency of IPs must below 80, if you want to change it, you can modify  this variable `THREASHOLD` in `main.js` . 
