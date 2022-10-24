@@ -1,5 +1,6 @@
-# CloudFrontIPSelector
+# CloudFrontIPSelector ![github workflow](https://github.com/BruceWind/CloudFrontIPSelector/actions/workflows/run.yml/badge.svg?branch=main)
 to choose the CloudFront IPs with the lowest possible connection latency.
+
 
 ### Background
 Because AWS's DNS function is so good, users of AWS CloudFront typically report having an extremely steady experience.
