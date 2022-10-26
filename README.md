@@ -1,4 +1,4 @@
-# CloudFrontIPSelector ![github workflow](https://github.com/BruceWind/CloudFrontIPSelector/actions/workflows/run.yml/badge.svg?branch=main)
+# CloudFrontIPSelector
 to choose the CloudFront IPs with the lowest possible connection latency.
 
 
