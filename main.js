@@ -14,7 +14,7 @@ import netmask from 'netmask';
 const Netmask = netmask.Netmask;
 
 const PING_THREADS = 1000;
-const THREASHOLD = 85;
+const THREASHOLD = 100;
 
 let countOfBeingProcess = 0;
 // this is the pattern of the latency from ping result.
@@ -270,7 +270,10 @@ async function main() {
 
         const strPrefix = resultArr.length == 0 ? 'Oops' : 'Congradulations';
 
-        console.log(`${strPrefix}! Got ${resultArr.length} IPs.`);
+        console.log(`${strPrefix}! Got ${resultArr.length} IPs. `);
+        if(resultArr.length==0){
+            console.log('You could try increasing THREASHOLD.');
+        }
 
     } catch (e) {
         console.error('Sorry,', e.message);
