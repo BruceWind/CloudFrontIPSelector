@@ -100,7 +100,7 @@ async function main() {
         }
 
         if (arrOfIPRanges.length == 0) {
-            console.error(`Got nothing fron ${OFFICIAL_AWS_IPs_URL}.`);
+            console.error(`Got nothing from ${OFFICIAL_AWS_IPs_URL}, you could try again!`);
             process.exit(1);
         }
 
@@ -206,7 +206,7 @@ async function main() {
 
 
         const processPrinter = setInterval(async () => {
-            console.log(`process: ${processIndex}/${maxProcess}. And got ${unsortedArr.length} available IPs.`);
+            console.log(`Got ${unsortedArr.length} available IPs with process: ${processIndex}/${maxProcess}.`);
         }, 1000 * 10);
 
         for (let i = 0; i < deletedIPs.length; i++) {
