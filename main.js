@@ -1,6 +1,8 @@
 import fetch from 'node-fetch';
 import ping from 'ping';
 import fs from 'node:fs';
+import cliProgress from 'cli-progress';
+
 // pls make sure this is identical url from https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/LocationsOfEdgeServers.html.
 //const OFFICIAL_AWS_IPs_URL = "https://d7uri8nf7uskq.cloudfront.net/tools/list-cloudfront-ips" //it is deprecated because it is without region.
 const OFFICIAL_AWS_IPs_URL = "https://ip-ranges.amazonaws.com/ip-ranges.json"
@@ -30,6 +32,9 @@ const httpSettings = {
 
 let filteredIPs = [];
 
+// create a new progress bar instance and use shades_classic theme
+const bar1 = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+
 // it is used to exclude China IPs.
 async function queryNation(ip) {
 
@@ -39,7 +44,7 @@ async function queryNation(ip) {
         const body = await response.text();
 
         const json = JSON.parse(body);
-        console.log(`${ip} is ${json.country}.`);
+        console.log(`${ip} is from ${json.country}.`);
         return json.countryCode;
     }
     catch (e) {
@@ -205,14 +210,17 @@ async function main() {
         const maxProcess = deletedIPs.length;
 
 
+        bar1.start(maxProcess, processIndex);
+
         const processPrinter = setInterval(async () => {
-            console.log(`Got ${unsortedArr.length} available IPs with process: ${processIndex}/${maxProcess}.`);
+            bar1.update(processIndex);
+            // console.log(`process: ${processIndex}/${maxProcess}. And got ${unsortedArr.length} available IPs.`);
         }, 1000 * 10);
 
         for (let i = 0; i < deletedIPs.length; i++) {
             const ip = deletedIPs[i];
             processIndex++;
-            if (unsortedArr.length >= 300) {// to save time.
+            if (unsortedArr.length >= 2000) {// to save time.
                 console.log('Already got enough IPs, stop pinging.');
                 break;
             }
@@ -249,6 +257,10 @@ async function main() {
                 });
             }
         }
+
+
+        // stop the progress bar
+        bar1.stop();
 
         console.log(`unsortedArr.length is ${unsortedArr.length}`);
         // to sort the array by the latency.
