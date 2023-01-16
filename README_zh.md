@@ -27,3 +27,6 @@ node ./main.js
 a. 我在当前脚本的代码里限制了被过滤的IP延迟的上限，如果你想改变, 您可以尝试修改 variable `THREASHOLD`在 `main.js`里. 
 
 b. 您想尝试 Gcore-CDN吗?  我已经写了另外一个工作于Gcore的IP-selector : https://github.com/BruceWind/GcoreCDNIPSelector, 您可以尝试一下.
+
+### 声明
+本项目用于修复网络体验问题，请遵守当地法律，请勿用于爬🪜。
