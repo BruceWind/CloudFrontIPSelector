@@ -1,4 +1,4 @@
-# CloudFrontIPSelector
+# CloudFrontIPSelector [中文](https://github.com/BruceWind/CloudFrontIPSelector/blob/main/README_zh.md)
 to choose the CloudFront IPs with the lowest possible connection latency.
 
 
