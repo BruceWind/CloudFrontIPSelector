@@ -1,5 +1,5 @@
 # CloudFrontIPSelector
-去选择一个极低延迟的CloudFront IP
+去选择一个极低延迟的CloudFront IP List
 
 
 
