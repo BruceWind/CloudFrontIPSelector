@@ -16,7 +16,7 @@ In case people who havn't set up node. I highly recommand [nvm](https://github.c
 2. run this JS file.
 ```
 npm install
-node ./main.js
+node ./
 ```
 
 3. wait minites to get `result.txt` which contain best IPs will be saved in this folder.
@@ -24,6 +24,9 @@ node ./main.js
 
 ### In addition
 
-a. I limited latency of selected IPs must below 80, if you want to change it, you can modify  this variable `THREASHOLD` in `main.js`. 
+a. I limited latency of selected IPs must below 80, if you want to change it, you can modify  this variable `THREASHOLD` in `main.js`.
 
 b. Have you tried Gcore-CDN?   I have written another IP-selector for Gcore: https://github.com/BruceWind/GcoreCDNIPSelector, you can try it.
+
+** Tanks ** :
+[sapics/ip-location-db](https://github.com/sapics/ip-location-db) is used by filter some IPs which belong to a specific country.

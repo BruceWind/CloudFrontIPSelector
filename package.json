@@ -2,6 +2,7 @@
   "type": "module",
   "dependencies": {
     "cli-progress": "^3.11.2",
+    "is-in-subnet": "^4.0.1",
     "netmask": "^2.0.2",
     "node-fetch": "^3.2.10",
     "ping": "^0.4.2"

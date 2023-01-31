@@ -16,7 +16,7 @@
 2. 运行这个js 脚本.
 ```
 npm install
-node ./main.js
+node ./
 ```
 
 3. 等待数分钟后，打开 项目目录下的`result.txt`去查看结果.
@@ -24,7 +24,7 @@ node ./main.js
 
 ### In addition
 
-a. 我在当前脚本的代码里限制了被过滤的IP延迟的上限，如果你想改变, 您可以尝试修改 variable `THREASHOLD`在 `main.js`里. 
+a. 我在当前脚本的代码里限制了被过滤的IP延迟的上限，如果你想改变, 您可以尝试修改 variable `THREASHOLD`在 `main.js`里.
 
 b. 您想尝试 Gcore-CDN吗?  我已经写了另外一个工作于Gcore的IP-selector : https://github.com/BruceWind/GcoreCDNIPSelector, 您可以尝试一下.
 
