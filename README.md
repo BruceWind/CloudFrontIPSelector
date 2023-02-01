@@ -28,5 +28,6 @@ a. I limited latency of selected IPs must below 80, if you want to change it, yo
 
 b. Have you tried Gcore-CDN?   I have written another IP-selector for Gcore: https://github.com/BruceWind/GcoreCDNIPSelector, you can try it.
 
-** Tanks ** :
-[sapics/ip-location-db](https://github.com/sapics/ip-location-db) is used by filter some IPs which belong to a specific country.
+**Thanks**
+
+[sapics/ip-location-db](https://github.com/sapics/ip-location-db) provides geoip databse.
