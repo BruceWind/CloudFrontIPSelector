@@ -10,22 +10,24 @@ import { BlockList } from "net"
 //const OFFICIAL_AWS_IPs_URL = "https://d7uri8nf7uskq.cloudfront.net/tools/list-cloudfront-ips" //it is deprecated because it is without region.
 const OFFICIAL_AWS_IPs_URL = "https://ip-ranges.amazonaws.com/ip-ranges.json"
 
-// const PREFIX_IP_REQUEST_URL = "http://ip-api.com/json/"
-
 "use strict"
 
 import netmask from 'netmask';
 
+
 const Netmask = netmask.Netmask;
 
 const PING_THREADS = 300;
-const THREASHOLD = 50;
+const THREASHOLD = 50;    // You can try to change this value, which avoid to cover nothing.
 
+
+// create a new progress bar instance and use shades_classic theme
+const terminalBarUI = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 let countOfBeingProcess = 0;
+
+
 // this is the pattern of the latency from ping result.
-const latencyPattern = /time=(\d+)\sms/gm;
-
-
+// const latencyPattern = /time=(\d+)\sms/gm;
 const httpSettings = {
   method: "Get",
   headers: {
@@ -33,45 +35,13 @@ const httpSettings = {
   }
 };
 
-// to read this cidr url into array
-const CN_MAINLAND_CIDR = 'https://raw.githubusercontent.com/herrbischoff/country-ip-blocks/master/ipv4/cn.cidr';
-
-//it is from github.
-const GEO_IP_RANGES_URL = "https://raw.githubusercontent.com/sapics/ip-location-db/master/dbip-country/dbip-country-ipv4.csv";
-
-const JP_CIDR = 'https://raw.githubusercontent.com/herrbischoff/country-ip-blocks/master/ipv4/jp.cidr';
-const HK_CIDR = 'https://raw.githubusercontent.com/herrbischoff/country-ip-blocks/master/ipv4/hk.cidr';
-const SG_CIDR = 'https://raw.githubusercontent.com/herrbischoff/country-ip-blocks/master/ipv4/sg.cidr';
-
-
-
+// It is used to read IP database from this url into array.
+// it is from github.
+const GEO_IP_RANGES_URL = "http://raw.githubusercontent.com/sapics/ip-location-db/master/dbip-country/dbip-country-ipv4.csv";
 
 let filteredIPs = [];
 
-// create a new progress bar instance and use shades_classic theme
-
-const bar1 = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
-
-// it is used to exclude China IPs.
-async function queryNation(ip) {
-
-
-  try {
-    var response = await fetch(PREFIX_IP_REQUEST_URL + ip, httpSettings);
-    const body = await response.text();
-
-    const json = JSON.parse(body);
-    console.log(`${ip} is from ${json.country}.`);
-    return json.countryCode;
-  }
-  catch (e) {
-    console.error(`queryNation encounter an error,`, e.message);
-    return undefined;
-  }
-
-}
-
-
+// it is used to block execution.
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -183,7 +153,8 @@ async function main() {
 
 
     //to  reset filteredIPs
-    filteredIPs.slice(0, filteredIPs.length);
+    filteredIPs.slice(0, filteredIPs.length);   // clear this array.
+
     for (let i = 0; i < availableGates.length; i++) {
       const gate = availableGates[i];
       const gatePrefix = gate.ip.substring(0, gate.ip.length - 1);
@@ -202,10 +173,10 @@ async function main() {
     const maxProcess = filteredIPs.length;
 
 
-    bar1.start(maxProcess, processIndex);
+    terminalBarUI.start(maxProcess, processIndex);
 
     const processPrinter = setInterval(async () => {
-      bar1.update(processIndex);
+      terminalBarUI.update(processIndex);
       // console.log(`process: ${processIndex}/${maxProcess}. And got ${unsortedArr.length} available IPs.`);
     }, 1000 * 10);
 
@@ -243,7 +214,7 @@ async function main() {
       await sleep(30);
     }
     // stop the progress bar
-    bar1.stop();
+    terminalBarUI.stop();
 
     console.log(`unsortedArr.length is ${unsortedArr.length}`);
     // to sort the array by the latency.
@@ -325,6 +296,7 @@ async function extractIPRanges(shortNation) {
   shortNation = shortNation.toUpperCase();
   console.log('extractIPRanges requesting... with nation: ' + shortNation);
   if (!ipDB) {
+    console.log('This step is downloading a large IP DB file, you will probably wait for minutes. ');
     var response = await fetch(GEO_IP_RANGES_URL, httpSettings);
 
     const body = await response.text();
@@ -344,8 +316,5 @@ async function extractIPRanges(shortNation) {
   console.log('extractIPRanges done. ');
 
   return blockList;
-
-
-
 
 }
