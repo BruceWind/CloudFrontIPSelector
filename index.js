@@ -4,17 +4,12 @@ import fs from 'node:fs';
 import cliProgress from 'cli-progress';
 import { isInSubnet, createChecker } from 'is-in-subnet';
 
-import { BlockList } from "net"
-
-// pls make sure this is identical url from https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/LocationsOfEdgeServers.html.
-//const OFFICIAL_AWS_IPs_URL = "https://d7uri8nf7uskq.cloudfront.net/tools/list-cloudfront-ips" //it is deprecated because it is without region.
-const OFFICIAL_AWS_IPs_URL = "https://ip-ranges.amazonaws.com/ip-ranges.json"
 
 "use strict"
 
+import { BlockList } from "net"
+
 import netmask from 'netmask';
-
-
 const Netmask = netmask.Netmask;
 
 const PING_THREADS = 300;
@@ -26,6 +21,9 @@ const terminalBarUI = new cliProgress.SingleBar({}, cliProgress.Presets.shades_c
 let countOfBeingProcess = 0;
 
 
+// pls make sure this is identical url from https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/LocationsOfEdgeServers.html.
+//const OFFICIAL_AWS_IPs_URL = "https://d7uri8nf7uskq.cloudfront.net/tools/list-cloudfront-ips" //it is deprecated because it is without region.
+const OFFICIAL_AWS_IPs_URL = "https://ip-ranges.amazonaws.com/ip-ranges.json"
 // this is the pattern of the latency from ping result.
 // const latencyPattern = /time=(\d+)\sms/gm;
 const httpSettings = {
@@ -48,14 +46,34 @@ function sleep(ms) {
 
 // 
 async function main() {
-  await sleep(30);
+
+  // First step: to read nation short name from command line. or use default value JP.
+  const args = process.argv.slice(2);
+  let nationShortName = 'JP';
+  if (args.length > 0) {
+    if (args.length > 1) {
+      console.error("Too many arguments. You can only input one argument, e.g. 'node index.js JP' ");
+      process.exit(1);
+    }
+    // a regex to match nation short name with 2 letters.
+    const regex = /^[A-Z]{2}$/;
+    if (regex.test(args[0])) {
+      nationShortName = args[0];
+    }
+    else {
+      console.error("The argument is not a valid nation short name, e.g. 'JP' ");
+      process.exit(1);
+    }
+  }
+
+
+
   try {
-    const chinaMainLandIPChecker = await extractIPRanges('CN');
-    const jpIPChecker = await extractIPRanges('JP');
-    const sgIPChecker = await extractIPRanges('SG');
-    const hkIPChecker = await extractIPRanges('HK');
+    // create a IP checker for filtering IPs limited to a nation given from command line.
+    const nationalIPChecker = await extractIPRanges(nationShortName);
 
     console.log(`start to obtain IP ranges...`);
+    //to read CDN IPs from AWS.
     var response = await fetch(OFFICIAL_AWS_IPs_URL, httpSettings);
     const body = await response.text();
     const json = JSON.parse(body);
@@ -65,6 +83,7 @@ async function main() {
       return;
     }
 
+    // ---------------- to filter available subnets ----------------
     console.log(`start to filter available subnets...`);
     // items of this are CIDR, its doc is here https://datatracker.ietf.org/doc/rfc4632/.
     const arrOfIPRanges = [];
@@ -87,22 +106,29 @@ async function main() {
       // if (filteredIPs.length > 10000) break;
       let netmask = new Netmask(range);
       netmask.forEach(async (ip) => {
-        if (jpIPChecker.check(ip)) {
+        if (nationalIPChecker.check(ip)) {
           filteredIPs.push(ip);
         }
       })
     }
-
 
     console.log(`IPs.length is ${filteredIPs.length}`);
     if (filteredIPs.length < 1) {
       //exit 1
       process.exit(1);
     }
+    // ---------------- to filter available subnets end ----------------
 
+
+
+    //--------------------------to find available network-gates --------------------------
+    // to filter network-gates which is open. 
+    // I assume that if the network-gate is open, 254 IPs behind it are probably open as well.
+    // Ans this step is also reduce the all process time.
     console.log(`start to detect network-gates open...`);
     //to detect network-gate is open.
     const gates = [];
+    const availableGates = []; // this should be used into next step.
     for (let i = 0; i < filteredIPs.length; i++) {
       const ip = filteredIPs[i];
       // if string ip last is '.0'
@@ -113,17 +139,11 @@ async function main() {
 
     console.log(`Got ${gates.length} gates.`);
 
-
-
-    const removalGates = [];
-    const availableGates = [];
     for (let i = 0; i < gates.length; i++) {
       const item = gates[i];
 
       const addIfNeed = (latency) => {
         if (latency > 500) {
-          removalGates.push({ ip: item, latency });
-          // console.log(item, 'added', latency);
         }
         else {
           availableGates.push({ ip: item, latency });
@@ -139,22 +159,12 @@ async function main() {
       }
 
     }
-
-    console.log(`removalGates.length is ${removalGates.length}`);
     console.log(`availableGates.length is ${availableGates.length}`);
-
-    // fs.writeFile('removalGates.txt', JSON.stringify(removalGates), function (err) {
-    //     if (err) return console.error(err);
-    // });
-    // fs.writeFile('availableGates.txt', JSON.stringify(availableGates), function (err) {
-    //     if (err) return console.error(err);
-    // });
+    //--------------------------to find available network-gates end --------------------------
 
 
-
-    //to  reset filteredIPs
+    //--------------------------to  reset filteredIPs --------------------------
     filteredIPs.slice(0, filteredIPs.length);   // clear this array.
-
     for (let i = 0; i < availableGates.length; i++) {
       const gate = availableGates[i];
       const gatePrefix = gate.ip.substring(0, gate.ip.length - 1);
@@ -167,6 +177,7 @@ async function main() {
 
     console.log(`try to ping ${filteredIPs.length} IPs...`);
 
+    //--------------------------to  reset filteredIPs end--------------------------
 
     const unsortedArr = [];
     let processIndex = 0;
