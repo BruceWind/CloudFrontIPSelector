@@ -4,7 +4,7 @@ CloudFrontIPSelector是一个用来选择连接延迟最低的CloudFront IP的�
 
 ## 背景
 
-由于AWS的DNS功能非常优秀，AWS CloudFront的用户通常能够享受到非常稳定的体验。但是，有时候，由于网络环境或其他原因，DNS可能会返回一些不太理想的IP，导致连接速度变慢或不稳定。
+由于AWS的DNS功能非常优秀，AWS CloudFront的用户通常能够享受到非常稳定的体验。但是，多数情况下DNS可能会返回一些不太理想的IP，导致连接速度变慢或不稳定。
 
 因此，一些中国用户倾向于绑定Host去 以优化访问CloudFront的体验。我创建这个脚本的目的是去选择一个低延迟的IP以便于中国用户绑定IP。
 
