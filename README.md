@@ -13,10 +13,13 @@ On the other hand, those living in China use it often get timeout, shipments los
 
 ### How to use?
 
-1. set up node environment.
+1. set up node environment
+
 In case people who havn't set up node. I highly recommand [nvm](https://github.com/nvm-sh/nvm) or [nvm-windows](https://github.com/coreybutler/nvm-windows.) to set up.
 
-2. connect to a stable network environment.
+2. connect to a stable network environment
+
+In some cases, the WIFI connection is unstable. Longer latency between your computer and router would give arise a negative result in the scan process.
 
 It is recommended to connect an **ethernet** wire and your computer, otherwise you must make sure your WIFI connection is stable. Without a stable connection, this script may can not obtain any IPs that latency below  **threshold**.
 A tips to know id your WIFI connection is stable is to ping your gateway IP(e.g. 192.168.0.1 or 192.168.50.1 which depends your local-IP, whose last number changed to 1). Or move your laptop close to your router.
