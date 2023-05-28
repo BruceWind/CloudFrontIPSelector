@@ -21,13 +21,15 @@ In case people who havn't set up node. I highly recommand [nvm](https://github.c
 It is recommended to connect an **ethernet** wire and your computer, otherwise you must make sure your WIFI connection is stable. Without a stable connection, this script may can not obtain any IPs that latency below  **threshold**.
 A tips to know id your WIFI connection is stable is to ping your gateway IP(e.g. 192.168.0.1 or 192.168.50.1 which depends your local-IP, whose last number changed to 1). Or move your laptop close to your router.
 
-1. run this JS file.
+3. run this JS file.
 ```
 npm install
 node ./
 ```
 
-1. wait minites to get `result.txt` which contain best IPs will be saved in this folder.
+4. wait
+
+wait minites to get `result.txt` which contain best IPs will be saved in this folder.
 
 
 ### In addition
