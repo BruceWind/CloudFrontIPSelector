@@ -19,7 +19,7 @@ In case people who havn't set up node. I highly recommand [nvm](https://github.c
 
 2. connect to a stable network environment
 
-In some cases, the WIFI connection is unstable. Longer latency between your computer and router would give arise a negative result in the scan process.
+Please note that when the WIFI connection is unstable, it may result in a longer latency between your computer and router. This can have a negative impact on the scan process and may affect the accuracy of the results.
 
 It is recommended to connect an **ethernet** wire and your computer, otherwise you must make sure your WIFI connection is stable. Without a stable connection, this script may can not obtain any IPs that latency below  **threshold**.
 A tips to know id your WIFI connection is stable is to ping your gateway IP(e.g. 192.168.0.1 or 192.168.50.1 which depends your local-IP, whose last number changed to 1). Or move your laptop close to your router.
