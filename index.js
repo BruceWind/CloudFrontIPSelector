@@ -13,7 +13,7 @@ import netmask from 'netmask';
 const Netmask = netmask.Netmask;
 
 const PING_THREADS = 300;
-const THREASHOLD = 50;    // You can try to change this value, which avoid to cover nothing.
+const THREASHOLD = 80;    // You can try to change this value, which avoid to cover nothing.
 
 
 // create a new progress bar instance and use shades_classic theme
@@ -169,9 +169,12 @@ async function main() {
       const gate = availableGates[i];
       const gatePrefix = gate.ip.substring(0, gate.ip.length - 1);
 
-      //for each from 1 to 255
-      for (let iOfGate = 1; iOfGate < 255; iOfGate++) {
-        filteredIPs.push(gatePrefix + iOfGate);
+      // put last numbers from 1 to 125, instead of 255. 
+      // it is means avoid some IPs providing same user experience.
+      for (let iOfGate = 1; iOfGate < 125; iOfGate++) {
+        if(iOfGate < 50 || iOfGate % 3 == 0) { //reducing IPs to save time.
+          filteredIPs.push(gatePrefix + iOfGate);
+        }
       }
     }
 
@@ -241,7 +244,7 @@ async function main() {
     clearInterval(processPrinter);
 
     //to save this sorted array to 'result.txt'.
-    fs.writeFile('result-new.txt', JSON.stringify(resultArr), function (err) {
+    fs.writeFile('result.txt', JSON.stringify(resultArr), function (err) {
       if (err) return console.error(err);
     });
 

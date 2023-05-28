@@ -13,13 +13,17 @@ CloudFrontIPSelector是一个用来选择连接延迟最低的CloudFront IP的�
 1. 配置环境.
 如果一些人还没有node环境，我推荐[nvm](https://github.com/nvm-sh/nvm) or [nvm-windows](https://github.com/coreybutler/nvm-windows.) 去设置一下该环境.
 
-2. 运行这个js 脚本.
+2. 连接到一个稳定的网络环境。
+建议您使用 以太网 线连接您的计算机，否则您必须确保您的WIFI连接是稳定的。如果没有稳定的连接，此脚本可能无法获取任何延迟低于 阈值 的IP地址。
+判断您的WIFI连接是否稳定的一个提示是ping您的网关IP（192.168.0.1或192.168.50.1，这取决于您本地IP的最后一个数字）。或将您的笔记本电脑移近您的路由器。
+
+3. 运行这个js 脚本.
 ```
 npm install
 node ./
 ```
 
-3. 等待数分钟后，打开 项目目录下的`result.txt`去查看结果.
+4. 等待数分钟后，打开 项目目录下的`result.txt`去查看结果.
 
 
 ### In addition

@@ -107,3 +107,6 @@ dist
 .lh
 result.txt
 .csv
+
+nohup
+*
