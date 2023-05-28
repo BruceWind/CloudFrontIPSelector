@@ -1,4 +1,4 @@
-# CloudFrontIPSelector 
+# CloudFrontIPSelector
 
 [中文](https://github.com/BruceWind/CloudFrontIPSelector/blob/main/README_zh.md)｜[English](https://github.com/BruceWind/CloudFrontIPSelector/blob/main/README.md)
 
@@ -18,16 +18,16 @@ In case people who havn't set up node. I highly recommand [nvm](https://github.c
 
 2. connect to a stable network environment.
 
-It is recommended to connect an **ethernet** wire and your computer, otherwise you must make sure your WIFI connection is stable. Without a stable connection, this script may can not obtain any IPs that latency below  **threshold**. 
-A tips to know id your WIFI connection is stable is to ping your gateway IP(192.168.0.1 or 192.168.50.1 which depends your local-IP with 1 at last number). Or move your laptop close to your router.
+It is recommended to connect an **ethernet** wire and your computer, otherwise you must make sure your WIFI connection is stable. Without a stable connection, this script may can not obtain any IPs that latency below  **threshold**.
+A tips to know id your WIFI connection is stable is to ping your gateway IP(e.g. 192.168.0.1 or 192.168.50.1 which depends your local-IP, whose last number changed to 1). Or move your laptop close to your router.
 
-3. run this JS file.
+1. run this JS file.
 ```
 npm install
 node ./
 ```
 
-4. wait minites to get `result.txt` which contain best IPs will be saved in this folder.
+1. wait minites to get `result.txt` which contain best IPs will be saved in this folder.
 
 
 ### In addition
