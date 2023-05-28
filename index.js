@@ -13,7 +13,9 @@ import netmask from 'netmask';
 const Netmask = netmask.Netmask;
 
 const PING_THREADS = 300;
-const THREASHOLD = 80;    // You can try to change this value, which avoid to cover nothing.
+
+// If you live in east of China, I recommend trying a value of 50.
+const THREASHOLD = 80;    // if you got no IPs in result, you can try enlarge this value to 120. 
 
 
 // create a new progress bar instance and use shades_classic theme
