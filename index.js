@@ -194,12 +194,12 @@ async function main() {
     const processPrinter = setInterval(async () => {
       terminalBarUI.update(processIndex);
       // console.log(`process: ${processIndex}/${maxProcess}. And got ${unsortedArr.length} available IPs.`);
-    }, 1000 * 10);
+    }, 1000 * 5);
 
     for (let i = 0; i < filteredIPs.length; i++) {
       const ip = filteredIPs[i];
       processIndex++;
-      if (unsortedArr.length >= 2000) {// to save time.
+      if (unsortedArr.length >= 200) {// to save time.
         console.log('Already got enough IPs, stop pinging.');
         break;
       }
@@ -310,9 +310,9 @@ async function queryAvgLatency(ip) {
 let ipDB = null;
 async function extractIPRanges(shortNation) {
   shortNation = shortNation.toUpperCase();
-  console.log('extractIPRanges requesting... with nation: ' + shortNation);
+  console.log('Extracting IP ranges with nation: ' + shortNation);
   if (!ipDB) {
-    console.log('This step is downloading a large IP DB file, you will probably wait for minutes. ');
+    console.log('This step is downloading a large IP DB file, you will probably wait for 2-3 minutes. In case it is running excess 3 minites, please stop it and then try again. ');
     var response = await fetch(GEO_IP_RANGES_URL, httpSettings);
 
     const body = await response.text();
@@ -328,8 +328,6 @@ async function extractIPRanges(shortNation) {
       blockList.addRange(split[0], split[1]);
     }
   });
-
-  console.log('extractIPRanges done. ');
 
   return blockList;
 
