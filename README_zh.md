@@ -32,9 +32,11 @@ node ./
 
 ### In addition
 
-a. 我在当前脚本的代码里限制了被过滤的IP延迟的门槛（阈值），如果你跑脚本发现获取不到任何IP, 您可以尝试修改 variable `THREASHOLD`在 `main.js`里.
+a. 我在当前脚本的代码里限制了被过滤的IP延迟的门槛（阈值），如果你跑脚本发现获取不到任何IP, 您可以尝试修改 variable `THREASHOLD`在 `index.js`里.
 
 b. 您想尝试 Gcore-CDN吗?  我已经写了另外一个工作于Gcore的IP-selector : https://github.com/BruceWind/GcoreCDNIPSelector, 您可以尝试一下.
+
+c. 为何我只测试延迟，不测试下载速度？通过对所有的IP的下载速度测试，我发现所有的Cloudfront的IP的下载速度都能跑满200M带宽，所以，测速变得无意义，因为几乎所有的IP带宽都足够地大，几乎能满足所有用户的带宽需求。
 
 ### 声明
 - 本项目用于修复网络体验问题，请遵守当地法律，请勿用于爬🪜。
