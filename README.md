@@ -37,7 +37,7 @@ wait minites to get `result.txt` which contain best IPs will be saved in this fo
 
 ### In addition
 
-a. I limited latency of selected IPs must below 80, if you want to change it, you can modify  this variable `THREASHOLD` in `main.js`.
+a. I limited latency of selected IPs must below 80, if you want to change it, you can modify  this variable `THREASHOLD` in `index.js`.
 
 b. Have you tried Gcore-CDN?   I have written another IP-selector for Gcore: https://github.com/BruceWind/GcoreCDNIPSelector, you can try it.
 
