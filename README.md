@@ -42,7 +42,7 @@ a. I limited latency of selected IPs must below 80, if you want to change it, yo
 b. Have you tried Gcore-CDN?   I have written another IP-selector for Gcore: https://github.com/BruceWind/GcoreCDNIPSelector, you can try it.
 
 
-c. Why don't I test **the up/down speed**? I've tested it and found that all IPs of Cloudfront have very high speed. As a result, there is no evidence to suggest that different IPs have different speeds. In other words, there is no need to differentiate between high-speed IPs and low-speed IPs.
+c. Why don't I test **the up/down speed** in code? I've tested it by another method and found that all IPs of Cloudfront have very high speed. As a result, there is no evidence to suggest that different IPs have different speeds. In other words, there is no need to differentiate between high-speed IPs and low-speed IPs.
 
 **Thanks**
 
