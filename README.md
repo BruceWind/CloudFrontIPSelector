@@ -2,7 +2,7 @@
 
 [中文](https://github.com/BruceWind/CloudFrontIPSelector/blob/main/README_zh.md)｜[English](https://github.com/BruceWind/CloudFrontIPSelector/blob/main/README.md)
 
-to choose the the lowest latency IPs in order to improve CloudFront connections.
+This project helps choose the best CloudFront IPs for achieving fast and low-latency connections.
 
 
 ### Background
