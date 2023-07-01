@@ -37,7 +37,9 @@ const httpSettings = {
 
 // It is used to read IP database from this url into array.
 // it is from github.
-const GEO_IP_RANGES_URL = "http://raw.githubusercontent.com/sapics/ip-location-db/master/dbip-country/dbip-country-ipv4.csv";
+// const GEO_IP_RANGES_URL = "http://raw.githubusercontent.com/sapics/ip-location-db/master/dbip-country/dbip-country-ipv4.csv";
+
+const GEO_IP_RANGES_URL = "./dbip-country-ipv4.csv";
 
 let filteredIPs = [];
 
@@ -307,16 +309,29 @@ async function queryAvgLatency(ip) {
 }
 
 
-let ipDB = null;
+
+async function readTextFile(filePath) {
+  try {
+    const data = await fs.promises.readFile(filePath, 'utf8');
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 async function extractIPRanges(shortNation) {
+  let ipDB = null;
   shortNation = shortNation.toUpperCase();
   console.log('Extracting IP ranges with nation: ' + shortNation);
   if (!ipDB) {
-    console.log('This step is downloading a large IP DB file, you will probably wait for 2-3 minutes. In case it is running excess 3 minites, please stop it and then try again. ');
-    var response = await fetch(GEO_IP_RANGES_URL, httpSettings);
+    // console.log('This step is downloading a large IP DB file, you will probably wait for 2-3 minutes. In case it is running excess 3 minites, please stop it and then try again. ');
+    // var response = await fetch(GEO_IP_RANGES_URL, httpSettings);
 
-    const body = await response.text();
-    ipDB = body.split('\n');
+    // const body = await response.text();
+    // ipDB = body.split('\n');
+
+    // to read local file : GEO_IP_RANGES_URL with await.
+    ipDB = (await readTextFile(GEO_IP_RANGES_URL)).split('\n');
   }
 
 
