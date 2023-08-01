@@ -180,7 +180,7 @@ async function main() {
       // it is means avoid some IPs providing same user experience.
       for (let fourthPart = 1; fourthPart < 125; fourthPart++) {
         if(fourthPart < 50 || fourthPart % 3 == 0) { //reducing IPs to save time.
-          filteredIPs.push(gatePrefix + fourthart);
+          filteredIPs.push(gatePrefix + fourthPart);
         }
       }
     }
