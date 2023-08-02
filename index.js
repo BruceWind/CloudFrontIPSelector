@@ -169,7 +169,7 @@ async function main() {
 
     //--------------------------to  reset filteredIPs --------------------------
     filteredIPs = [];  // clear this array.
-    if(filteredIPs.length > 0) {
+    if (filteredIPs.length > 0) {
       throw new Error('\nfilteredIPs should be empty.');
     }
     for (let i = 0; i < availableGates.length; i++) {
@@ -178,8 +178,8 @@ async function main() {
 
       // put last numbers from 1 to 125, instead of 255. 
       // it is means avoid some IPs providing same user experience.
-      for (let fourthPart = 1; fourthPart < 125; fourthPart++) {
-        if(fourthPart < 50 || fourthPart % 3 == 0) { //reducing IPs to save time.
+      for (let fourthPart = 1; fourthPart < 100; fourthPart++) {
+        if (fourthPart < 50 || fourthPart % 4 == 0) { //reducing IPs to save time.
           filteredIPs.push(gatePrefix + fourthPart);
         }
       }
