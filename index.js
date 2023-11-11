@@ -342,7 +342,7 @@ async function extractIPRanges(shortNation) {
   // to foreach the ipDB, and find the IP range of the nation. the item of ipDB is like this: 13.35.0.0,13.35.7.255,TW
   ipDB.map((item, index) => {
     const split = item.split(',');
-    if (split[2] == shortNation) {
+    if (split && split[2] && split[2].trim() == shortNation) {
       blockList.addRange(split[0], split[1]);
     }
   });
