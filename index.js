@@ -15,7 +15,7 @@ const Netmask = netmask.Netmask;
 const PING_THREADS = 300;
 
 // If you live in east of China, I recommend trying a value of 50.
-const THREASHOLD = 80;    // if you got no IPs in result, you can try enlarge this value to 120. 
+const THREASHOLD = 90;    // if you got no IPs in result, you can try enlarge this value to 120. 
 
 
 // create a new progress bar instance and use shades_classic theme
@@ -322,7 +322,7 @@ async function readTextFile(filePath) {
   }
 }
 
-async function extractIPRanges(shortNation) {
+export async function extractIPRanges(shortNation) {
   let ipDB = null;
   shortNation = shortNation.toUpperCase();
   console.log('Extracting IP ranges with nation: ' + shortNation);
@@ -339,14 +339,26 @@ async function extractIPRanges(shortNation) {
 
 
   const blockList = new BlockList()
+  let countOfRanges = 0;
   // to foreach the ipDB, and find the IP range of the nation. the item of ipDB is like this: 13.35.0.0,13.35.7.255,TW
   ipDB.map((item, index) => {
     const split = item.split(',');
     if (split && split[2] && split[2].trim() == shortNation) {
       blockList.addRange(split[0], split[1]);
+      countOfRanges++;
     }
   });
 
+  if (countOfRanges == 0) {
+    console.error(`Sorry, I can't find any IP range of ${shortNation} in ${GEO_IP_RANGES_URL}.`);
+    console.error(`This might be a bug, or the nation: ${shortNation} is totally wrong.`);
+    process.exit(1);
+  }
   return blockList;
 
+}
+
+
+export default {
+  extractIPRanges
 }
