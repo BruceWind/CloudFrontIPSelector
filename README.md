@@ -27,7 +27,8 @@ A tips to know if your WIFI connection is stable is to ping your gateway IP(e.g.
 3. run this JS file.
 ```
 npm install
-node ./
+node ./  
+# or you would like find IPs with nation short name like SG, you can run "node ./ SG"
 ```
 
 4. wait

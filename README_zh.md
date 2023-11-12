@@ -23,6 +23,7 @@ CloudFrontIPSelector是一个用来选择连接延迟最低的CloudFront IP的�
 ```
 npm install
 node ./
+# 或者你想要筛选制定国家的IP, 例如新加坡： "node ./ SG"
 ```
 
 4. 等待

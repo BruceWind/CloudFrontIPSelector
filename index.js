@@ -53,7 +53,7 @@ async function main() {
 
   // First step: to read nation short name from command line. or use default value JP.
   const args = process.argv.slice(2);
-  let nationShortName = 'JP';
+  let nationShortName = 'JP';   // you can this this line to a nation short name like: SG, KR.
   if (args.length > 0) {
     if (args.length > 1) {
       console.error("Too many arguments. You can only input one argument, e.g. 'node index.js JP' ");
